@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>Example</title>
-
 </head>
 <body>
-    <form action="#">
-        <p>Search Bar</p>
-        <script type="text/javascript" >
-            function getResults() {
-                var x = document.getElementById("searchbar").value;
-                var url = "http://127.0.0.1:5000/search/aL8blrXVEaJdDA/myblog?title=";
-                url = url + x;
-                response = fetch(url)
-                .then(response =>{
-                    return (response.json())
-                })
-                .then(data =>{
-                    var text = "";
-                    for (var i = 0; i < data.length; i++) {
-                      text += data[i]['_source']['title'] + "<br>";
-                    }
-                    document.getElementById("results").innerHTML = text;
-                })
-            }
-        </script>
-        <p><input type="text" name="searchbar" id="searchbar" oninput="getResults()"></p>
-        <div id="results">
 
-        </div>
-        <input type="submit" value="Search">
-    </form>
+<header>
+    <a href="add">Add Blog</a>
+</header>
+Universal-Search-Engine 
+<div id="searchbar">
+</div>
+<script src="https://searchengine-walkover.herokuapp.com/static/mysearch.js" ></script>
+<script >
+    sb = new SearchBar("myblog", "ZTEsBf6qf7Ekog");
+    sb.start("searchbar")
+</script> 
+
+
+Search By algolia
+<main class="search-container">
+    <div id="searchbox"></div>
+    <div id="hits"></div>
+</main>
+<!-- <script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.8.0/dist/instantsearch.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/algoliasearch@4.5.1/dist/algoliasearch-lite.umd.js" integrity="sha256-EXPXz4W6pQgfYY3yTpnDa3OH8/EPn16ciVsPQ/ypsjk=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.8.3/dist/instantsearch.production.min.js" integrity="sha256-LAGhRRdtVoD6RLo2qDQsU2mp+XVSciKRC8XPOBWmofM=" crossorigin="anonymous"></script>
+
+<script src="static/app.js"></script>
+
 </body>
 </html>
