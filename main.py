@@ -69,10 +69,9 @@ def add():
         blog = Blog(title=request.form['title'], content=request.form['content'])
         result = db.session.add(blog)
         db.session.commit()
-        response = requests.post("http://0.0.0.0:5000/add/ZTEsBf6qf7Ekog/myblog", json=blog.to_dict())
+        response = requests.post("https://search-engine-walkover.el.r.appspot.com/add/ZTEsBf6qf7Ekog/myblog", json=json.dumps(blog.to_dict()))
         print(response.json)
-        index.save_object(blog.to_dict())
-        return redirect(url_for('home'))
+        return redirect(url_for('get_blog_sample'))
 
 
 if __name__ == '__main__':
