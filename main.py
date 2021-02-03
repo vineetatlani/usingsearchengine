@@ -52,14 +52,14 @@ def get_ecommerce_sample():
 
 
 
-@app.route("/show/<title>/")
-def show(title):
-    print(title)
-    blog = Blog.query.filter_by(title=title).first()
+@app.route("/show/<id>/")
+def show(id):
+    print(id)
+    blog = Blog.query.get(id)
     print(blog)
     if blog!= None:
         return "<h1>"+blog.title+"</h1>"+"<p>"+blog.content+"</p>"
-    return title
+    return "sample title"
 
 @app.route("/add/", methods=['GET', 'POST'])
 def add():

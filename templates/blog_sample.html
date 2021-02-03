@@ -19,7 +19,7 @@
             "div_id": "searchbar",
             "template": function(hit) {
                 return `
-                    <a href='${hit['_source']['link']}''>${hit['highlight']['title']}</a><br>
+                    <a href='https://using-walkover-search.herokuapp.com/show/${hit._id}'>${hit['highlight']['title']}</a><br>
                 `;
             }
         })
