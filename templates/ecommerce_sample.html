@@ -46,24 +46,32 @@
 <body>
 <h2 style="text-align:center">Ecommerce Search Example</h2>
 <div>
-    Universal-Search-Engine
-    <div id="searchbar">
+    
+    <div id="searchfilter" style="float: left; width: 20%;">
+
     </div>
-    <script src="https://search-engine-walkover.el.r.appspot.com/static/mysearch.js" ></script>
+    <div id="searchbar" style="float: right; width: 80%;">
+      Universal-Search-Engine<br>
+       
+    </div>
+    <script src="http://127.0.0.1:5000/static/mysearch.js" ></script>
     <script >
        
-        sb = new SearchBar("ecommerce", "ZTEsBf6qf7Ekog", 20);
+        sb = new WalkoverSearch("ecommerce", "ZTEsBf6qf7Ekog", 20);
+        sb.addFilters({
+           "div_id": 'searchfilter'
+         })
         sb.start({
             "div_id": "searchbar",
             "template": function(hit) {
                 return `
                 <div class="productCard">
-                    <img src=${hit._source.image.split(',')[0].substring(1)}/>
+                    <img src=${hit._source.image_urls[0]} onerror="this.onerror=null; this.src='static/unavailable.png'"/>
                     <h1>${hit._source.product_name}</h1>
                     <p class="productDetails">${hit._source.brand}</p>
-                    <p>Price ${hit._source.retail_price}$</p>
-                    <p>Price ${hit._source.discounted_price}$</p>
-                    <p><a href="${hit._source.product_url}"><button>Buy Now</button></a></p>
+                    <p><strike>Price  ${hit._source.retail_price}$ </strike></p>
+                    <p>New Price ${hit._source.discounted_price}$</p>
+                    <p><a href="${hit._source.product_url[0]}"><button>Buy Now</button></a></p>
                </div>
                 
                 `;
