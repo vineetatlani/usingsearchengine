@@ -3,9 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import secrets
 from algoliasearch.search_client import SearchClient
 import json
-import pandas as pd
 import requests
-data = pd.read_csv('/home/user/Downloads/Compressed/WinnersInterviewBlogPosts.csv')
 
 client = SearchClient.create('FOL57BHXOW', '045e466101d4cf13e7ee4b16c889d2f6')
 index = client.init_index('demo_myblog')
@@ -43,14 +41,25 @@ def home():
     return render_template('home.html')
 
 
-@app.route("/show/<title>/")
-def show(title):
-    print(title)
-    blog = Blog.query.filter_by(title=title).first()
+@app.route("/blogSample")
+def get_blog_sample():
+    return render_template('blog_sample.html')
+
+
+@app.route("/ecommerceSample")
+def get_ecommerce_sample():
+    return render_template('ecommerce_sample.html')
+
+
+
+@app.route("/show/<id>/")
+def show(id):
+    print(id)
+    blog = Blog.query.get(id)
     print(blog)
     if blog!= None:
         return "<h1>"+blog.title+"</h1>"+"<p>"+blog.content+"</p>"
-    return title
+    return "sample title"
 
 @app.route("/add/", methods=['GET', 'POST'])
 def add():
@@ -60,10 +69,9 @@ def add():
         blog = Blog(title=request.form['title'], content=request.form['content'])
         result = db.session.add(blog)
         db.session.commit()
-        response = requests.post("http://0.0.0.0:5000/add/ZTEsBf6qf7Ekog/myblog", json=blog.to_dict())
+        response = requests.post("https://search-engine-walkover.el.r.appspot.com/add/ZTEsBf6qf7Ekog/myblog", json=json.dumps(blog.to_dict()))
         print(response.json)
-        index.save_object(blog.to_dict())
-        return redirect(url_for('home'))
+        return redirect(url_for('get_blog_sample'))
 
 
 if __name__ == '__main__':

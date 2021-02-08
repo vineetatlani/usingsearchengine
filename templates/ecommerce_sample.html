@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+   body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+   }
+   img {
+      width: 90%;
+      height: 200px;
+   }
+   .productCard {
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      max-width: 300px;
+      margin: auto;
+      text-align: center;
+      float: left;
+      font-family: arial;
+      background-color: rgb(190, 224, 224);
+      height: 600px;
+      margin: 20px;
+   }
+   .productDetails {
+      color: rgb(26, 0, 51);
+      font-weight: bold;
+      font-size: 18px;
+   }
+   button {
+      border: none;
+      outline: 0;
+      display: inline-block;
+      padding: 8px;
+      color: white;
+      background-color: rgb(23, 31, 102);
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+      
+      font-size: 18px;
+   }
+   button:hover, a:hover {
+      opacity: 0.7;
+   }
+</style>
+</head>
+<body>
+<h2 style="text-align:center">Ecommerce Search Example</h2>
+<div>
+    
+    <div id="searchfilter" style="float: left; width: 20%;">
+
+    </div>
+    <div id="searchbar" style="float: right; width: 80%;">
+      Universal-Search-Engine<br>
+       
+    </div>
+    <script src="http://127.0.0.1:5000/static/mysearch.js" ></script>
+    <script >
+       
+        sb = new WalkoverSearch("ecommerce", "ZTEsBf6qf7Ekog", 20);
+        sb.addFilters({
+           "div_id": 'searchfilter'
+         })
+        sb.start({
+            "div_id": "searchbar",
+            "template": function(hit) {
+                return `
+                <div class="productCard">
+                    <img src=${hit._source.image_urls[0]} onerror="this.onerror=null; this.src='static/unavailable.png'"/>
+                    <h1>${hit._source.product_name}</h1>
+                    <p class="productDetails">${hit._source.brand}</p>
+                    <p><strike>Price  ${hit._source.retail_price}$ </strike></p>
+                    <p>New Price ${hit._source.discounted_price}$</p>
+                    <p><a href="${hit._source.product_url[0]}"><button>Buy Now</button></a></p>
+               </div>
+                
+                `;
+            }
+        })
+        
+    </script> 
+
+</div>
+</body>
+</html>

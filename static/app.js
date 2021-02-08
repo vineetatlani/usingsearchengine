@@ -18,19 +18,17 @@ search.addWidgets([
     templates: {
         empty: "No results.",
         item: function(hit) {
-          return hitTemplate(hit);
+          return `
+          <div class="hit">
+                <a href="#">${hit._highlightResult.title.value}</a><br>
+                
+                </div>
+          </div>
+        `;
         }
       }
   })
 ]);
 
-function hitTemplate(hit) {
-    return `
-      <div class="hit">
-            ${hit._highlightResult.title.value}<br>
-            </div>
-      </div>
-    `;
-  }
 
 search.start();
