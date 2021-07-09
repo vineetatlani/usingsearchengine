@@ -1,12 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import secrets
-from algoliasearch.search_client import SearchClient
 import json
 import requests
 
-client = SearchClient.create('FOL57BHXOW', '045e466101d4cf13e7ee4b16c889d2f6')
-index = client.init_index('demo_myblog')
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(25)

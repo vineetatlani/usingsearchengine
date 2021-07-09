@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <style>
+      body {
+         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      img {
+         width: 90%;
+         height: 200px;
+      }
+
+      .productCard {
+         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+         max-width: 300px;
+         margin: auto;
+         text-align: center;
+         float: left;
+         font-family: arial;
+         background-color: rgb(190, 224, 224);
+         height: 600px;
+         margin: 20px;
+      }
+
+      .productDetails {
+         color: rgb(26, 0, 51);
+         font-weight: bold;
+         font-size: 18px;
+      }
+
+      button {
+         border: none;
+         outline: 0;
+         display: inline-block;
+         padding: 8px;
+         color: white;
+         background-color: rgb(23, 31, 102);
+         text-align: center;
+         cursor: pointer;
+         width: 100%;
+
+         font-size: 18px;
+      }
+
+      button:hover,
+      a:hover {
+         opacity: 0.7;
+      }
+      em {
+         text-decoration: underline;
+      }
+   </style>
+   <link rel="stylesheet" href="static/app.css">
+</head>
+
+<body>
+   <h2 style="text-align:center">Ecommerce Search Example</h2>
+   <div>
+      <script src="bundle.js"></script>
+      <script>
+      </script>
+      <div id="searchfilter" style="float: left; width: 20%;">
+
+      </div>
+      <div id="searchbar" style="float: right; width: 80%;">
+         Universal-Search-Engine<br>
+         <div>
+            <input type="search" id="input">
+         </div>
+         <div id="results">
+            <div class="loader" style="display: none;" id="loader"></div>
+         </div>
+      </div>
+
+      <script>
+         var apiInstance = new window.use.SearchApi();
+
+         var indexName = "test-2"; // String | name of index
+
+         var API_KEY = "9_-P2C2Z3ZDJqc_MrylXj-qiHdwRGBilgA"; // String | API KEY for authentication
+
+         let start;
+         let query = '';
+         function addResult(hit) {
+            let product, brand, mainCategory, subCategory, category3
+            if('Product' in hit.highlight) {
+               name = hit.highlight['Product']
+            } else {
+               name = hit._source['Product']
+            }
+            return `
+                <div class="productCard">
+                    <img src='' onerror="this.onerror=null; this.src='static/unavailable.png'"/>
+                    <h1>${name}</h1>
+                    <p class="productDetails">${hit._source['Brand names']}</p>
+                    <p>Main Category  ${hit._source['Main Category']}$ </p>
+                    <p>Sub category  ${hit._source['Sub category']}$ </p>
+                    <p>Category3  ${hit._source['Category3']}$ </p>
+               </div>
+                `;
+         }
+         const resultElement = document.getElementById('results');
+         const userToken = 'vineet1234';
+         const filterElement = document.getElementById('searchfilter');
+         var checked_filters = []
+         var searchElement = document.getElementById('input')
+         var loaderElement = document.getElementById('loader');
+         var callback = function (error, result, response) {
+            if (error) {
+               console.error(error);
+            } else {
+               console.log(result);
+               loaderElement.style.display = 'none'
+
+               resultElement.innerHTML = '';
+               resultElement.innerText = '';
+               filterElement.innerHTML = '';
+               if ('hits' in result) {
+                  var hits = result['hits']['hits']
+                  for (var i = 0; i < hits.length; i++) {
+                     var hitElement = document.createElement('DIV')
+                     resultElement.append(hitElement)
+
+                     hitElement.innerHTML = addResult(hits[i])
+
+                     hitElement.id = hits[i]._id
+                     hitElement.onclick = function () {
+                        console.log(this.id)
+                        var _object = {
+                           "objectClickedOn": this.id,
+                           "clickedByUser": userToken,
+                           "query": searchElement.value
+                        }
+                        console.log(_object);
+                        var type = "click"; // String | type of the event
+
+                        var clickCallback = function (error, data, response) {
+                           if (error) {
+                              console.error(error);
+                           } else {
+                              console.log(data);
+                           }
+                        };
+                        apiInstance.generateEvent(indexName, API_KEY, type, _object, clickCallback);
+                     }
+
+                  }
+               }
+
+               if ("aggregations" in result && filterElement != null) {
+                  var aggregation = result['aggregations']
+                  var filtersList = document.createElement('ul')
+                  filtersList.id = "searchFilters"
+
+
+                  for (var key in aggregation) {
+                     // check if the property/key is defined in the object itself, not in parent
+                     if (aggregation.hasOwnProperty(key)) {
+                        var key_element = document.createElement('li')
+                        key_element.className = "filter_name"
+
+                        key_element.innerHTML += `<p><b>${key}</b></p>`
+                        var list_element = document.createElement('ol')
+
+                        var buckets = aggregation[key]['buckets']
+                        for (var i = 0; i < buckets.length; i++) {
+                           var element = buckets[i]
+                           var checkbox = document.createElement('INPUT')
+                           var list_item = document.createElement('li')
+
+
+                           checkbox.type = 'checkbox'
+                           var id = key + "_" + element['key']
+                           checkbox.name = id
+                           checkbox.id = id
+                           checkbox.className = "checkbox_filter"
+                           if (checked_filters.includes(id)) {
+                              checkbox.checked = true
+                           }
+
+                           checkbox.onchange = function () {
+                              if (checked_filters.includes(this.id)) {
+                                 checked_filters.pop(this.id)
+                              }
+                              else {
+                                 checked_filters.push(this.id)
+                              }
+                              getSearchResults()
+                           }
+
+                           var label = document.createElement('label')
+                           label.htmlFor = id
+
+                           label.appendChild(document.createTextNode(`${element['key']} (${element['doc_count']})`))
+                           list_item.appendChild(checkbox)
+                           list_item.appendChild(label)
+                           list_element.appendChild(list_item)
+                        }
+                        key_element.appendChild(list_element)
+                        filtersList.appendChild(key_element)
+                     }
+                  }
+                  filterElement.appendChild(filtersList)
+
+               }
+            }
+         };
+
+         const getSearchResults = function () {
+            loaderElement.style.display = 'block'
+            query = searchElement.value
+
+            const json = {}
+            if (filterElement != null) {
+               var filter_name_list = document.getElementById('searchFilters')
+               var checkboxes_list = document.getElementsByClassName('checkbox_filter')
+
+               if (checkboxes_list.length != 0) {
+                  json['postFilters'] = {}
+                  for (var i = 0; i < checkboxes_list.length; i++) {
+                     if (checkboxes_list[i].checked) {
+                        var name = checkboxes_list[i].name;
+
+                        var filter_type = name.substring(name.indexOf('_') + 1, name.lastIndexOf('_'))
+                        var filter_value = name.substring(name.lastIndexOf('_') + 1)
+                        if (filter_type in json['postFilters'])
+                           json['postFilters'][filter_type].push(filter_value)
+                        else
+                           json['postFilters'][filter_type] = [filter_value]
+
+                     }
+                  }
+               }
+            }
+            var opts = {
+               'size': 10, // Number | maximum number of results to be returned
+               'userToken': userToken, // String | userToken for personalization
+               'searchParameters': {
+                  postFilters: json['postFilters']
+               }
+            };
+            apiInstance.searchQuery(indexName, query, API_KEY, opts, callback);
+         }
+
+         window.onload = function () {
+            const debounce = (func, delay) => {
+               let debounceTimer
+               return function () {
+                  const context = this
+                  const args = arguments
+                  clearTimeout(debounceTimer)
+                  debounceTimer
+                     = setTimeout(() => func.apply(context, args), delay)
+               }
+            }
+            searchElement.oninput = debounce(getSearchResults, 200)
+         }
+      </script>
+
+   </div>
+</body>
+
+</html>
